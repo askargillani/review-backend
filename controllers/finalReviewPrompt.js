@@ -1,4 +1,4 @@
-import { findPastReviews, getContext,addContext } from "../repository/conversations.js";
+import { getContext,addContext } from "../repository/conversations.js";
 import { finalReviewService } from "../gptServices/finalReview.js";
 
 export const FinalReviewPrompt = async (req,res,next) => {

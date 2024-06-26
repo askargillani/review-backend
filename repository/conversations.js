@@ -1,7 +1,7 @@
 import { Conversation } from "../models/conversation.js";
 import { Employee } from "../models/reviews.js";
 import { SelfReview } from "../models/selfReview.js";
-import { PastReviews } from "../models/pastReviews.js";
+import {PastReview} from "../models/pastReviews.js"
 
 export async function addContext(conversationId, message) {
     try {
@@ -32,6 +32,22 @@ export async function getContext(conversationId) {
         }
 
         return existingConversation;
+    } catch (error) {
+        console.error('Error adding context:', error.message);
+        // Handle error (e.g., log it, throw further, etc.)
+    }
+}
+
+export async function getPastReview(name) {
+    try {
+        // Example: Find existing conversation by conversationId
+        const pastReview = await PastReview.findOne({ employeeName: new RegExp(`^${name}$`, 'i')   });
+
+        if (!pastReview) {
+            throw new Error('Conversation not found');
+        }
+
+        return pastReview;
     } catch (error) {
         console.error('Error adding context:', error.message);
         // Handle error (e.g., log it, throw further, etc.)
@@ -94,15 +110,6 @@ export async function addSelfReview(name, review) {
     }
 }
 
-export async function findPastReviews(name) {
-    const pastReviews = await PastReviews.find({
-        employeeName: {
-          $regex: new RegExp(`^${name}$`, 'i')
-        }
-      });
-    return pastReviews;
-}
-
 export async function getManagerReviews(name) {
     try {
         const existingEmployee = await Employee.findOne({ employeeName: new RegExp(`^${name}$`, 'i')  });
@@ -113,6 +120,39 @@ export async function getManagerReviews(name) {
         else{
             return null;
         }
+    } catch (error) {
+        console.error('Error adding review:', error.message);
+    }
+}
+
+export async function saveReviews(employeeName,
+                                        programmingSkillsScale,
+                                        programmingSkillsComments,
+                                        senseOfResponsibilityScale,
+                                        senseOfResponsibilityComments,
+                                        teamworkScale,
+                                        teamworkComments,
+                                        selfLearningScale,
+                                        selfLearningComments,
+                                        professionalAppearanceScale,
+                                        professionalAppearanceComments) {
+    try {
+        var review = new PastReview({
+            employeeName: employeeName,
+            programmingSkillsScale: programmingSkillsScale,
+            programmingSkillsComments: programmingSkillsComments,
+            senseOfResponsibilityScale: senseOfResponsibilityScale,
+            senseOfResponsibilityComments: senseOfResponsibilityComments,
+            teamworkScale: teamworkScale,
+            teamworkComments: teamworkComments,
+            selfLearningScale: selfLearningScale,
+            selfLearningComments: selfLearningComments,
+            professionalAppearanceScale: professionalAppearanceScale,
+            professionalAppearanceComments: professionalAppearanceComments
+        });
+
+        await review.save();
+        console.log('Review added successfully');
     } catch (error) {
         console.error('Error adding review:', error.message);
     }
